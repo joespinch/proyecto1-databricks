@@ -1,0 +1,24 @@
+bundle:
+  name: proyecto1-databricks
+
+variables:
+  workspace_path:
+    description: Databricks workspace destination path
+    default: /Shared/proyecto1-databricks
+
+workspace:
+  root_path: ${var.workspace_path}
+
+sync:
+  include:
+    - PrepAmb/**
+    - proceso/**
+    - reversion/**
+    - seguridad/**
+    - dashboard/**
+    - datasets/**
+
+targets:
+  dev:
+    default: true
+    mode: development

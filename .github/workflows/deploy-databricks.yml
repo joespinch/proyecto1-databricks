@@ -16,6 +16,8 @@ on:
       - "reversion/**"
       - "seguridad/**"
       - "dashboard/**"
+      - "datasets/**"
+      - "databricks.yml"
       - ".github/workflows/deploy-databricks.yml"
 
 jobs:
@@ -53,16 +55,12 @@ jobs:
             echo "target=/Shared/proyecto1-databricks" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Deploy notebooks, dashboard and datasets
+      - name: Validate Databricks bundle
         shell: bash
         run: |
-          TARGET="${{ steps.cfg.outputs.target }}"
-          echo "Deploying to ${TARGET}"
+          databricks bundle validate -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}"
 
-          databricks workspace mkdirs "${TARGET}"
-
-          for dir in PrepAmb proceso reversion seguridad dashboard datasets; do
-            if [ -d "$dir" ]; then
-              databricks workspace import-dir "$dir" "${TARGET}/$dir" --overwrite
-            fi
-          done
+      - name: Deploy Databricks bundle
+        shell: bash
+        run: |
+          databricks bundle deploy -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}"
