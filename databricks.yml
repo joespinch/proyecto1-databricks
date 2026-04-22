@@ -6,9 +6,6 @@ variables:
     description: Databricks workspace destination path
     default: /Shared/proyecto1-databricks
 
-workspace:
-  root_path: ${var.workspace_path}
-
 sync:
   include:
     - PrepAmb/**
@@ -22,6 +19,8 @@ targets:
   dev:
     default: true
     mode: production
+    workspace:
+      root_path: ${var.workspace_path}
 
 resources:
   jobs:
