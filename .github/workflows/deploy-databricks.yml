@@ -53,7 +53,7 @@ jobs:
             echo "target=/Shared/proyecto1-databricks" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Deploy notebooks and dashboard
+      - name: Deploy notebooks, dashboard and datasets
         shell: bash
         run: |
           TARGET="${{ steps.cfg.outputs.target }}"
@@ -61,16 +61,8 @@ jobs:
 
           databricks workspace mkdirs "${TARGET}"
 
-          for dir in PrepAmb proceso reversion seguridad dashboard; do
+          for dir in PrepAmb proceso reversion seguridad dashboard datasets; do
             if [ -d "$dir" ]; then
               databricks workspace import-dir "$dir" "${TARGET}/$dir" --overwrite
             fi
           done
-
-      - name: Upload datasets to DBFS
-        shell: bash
-        run: |
-          if [ -d "datasets" ]; then
-            databricks fs mkdirs dbfs:/FileStore/proyecto1-databricks/datasets
-            databricks fs cp --recursive datasets dbfs:/FileStore/proyecto1-databricks/datasets --overwrite
-          fi
