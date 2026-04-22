@@ -64,3 +64,8 @@ jobs:
         shell: bash
         run: |
           databricks bundle deploy -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}"
+
+      - name: Run medallion pipeline job
+        shell: bash
+        run: |
+          databricks bundle run -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}" medallion_pipeline
