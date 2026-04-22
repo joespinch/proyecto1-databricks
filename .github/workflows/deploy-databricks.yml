@@ -73,7 +73,7 @@ jobs:
       - name: Deploy Databricks bundle
         shell: bash
         run: |
-          databricks bundle deploy -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}" --var "node_type_id=${{ steps.cfg.outputs.node_type }}"
+          databricks bundle deploy -t dev --force-lock --var "workspace_path=${{ steps.cfg.outputs.target }}" --var "node_type_id=${{ steps.cfg.outputs.node_type }}"
 
       - name: Run medallion pipeline job
         shell: bash
