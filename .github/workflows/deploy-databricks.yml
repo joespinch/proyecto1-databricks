@@ -1,0 +1,76 @@
+name: Deploy Databricks
+
+on:
+  workflow_dispatch:
+    inputs:
+      workspace_path:
+        description: "Databricks workspace destination path"
+        required: false
+        default: "/Shared/proyecto1-databricks"
+  push:
+    branches:
+      - main
+    paths:
+      - "PrepAmb/**"
+      - "proceso/**"
+      - "reversion/**"
+      - "seguridad/**"
+      - "dashboard/**"
+      - ".github/workflows/deploy-databricks.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validate Databricks secrets
+        shell: bash
+        run: |
+          if [ -z "${DATABRICKS_HOST}" ] || [ -z "${DATABRICKS_TOKEN}" ]; then
+            echo "Missing DATABRICKS_HOST or DATABRICKS_TOKEN secret"
+            exit 1
+          fi
+
+      - name: Define deploy path
+        id: cfg
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.workspace_path }}" ]; then
+            echo "target=${{ github.event.inputs.workspace_path }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "target=/Shared/proyecto1-databricks" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy notebooks and dashboard
+        shell: bash
+        run: |
+          TARGET="${{ steps.cfg.outputs.target }}"
+          echo "Deploying to ${TARGET}"
+
+          databricks workspace mkdirs "${TARGET}"
+
+          for dir in PrepAmb proceso reversion seguridad dashboard; do
+            if [ -d "$dir" ]; then
+              databricks workspace import-dir "$dir" "${TARGET}/$dir" --overwrite
+            fi
+          done
+
+      - name: Upload datasets to DBFS
+        shell: bash
+        run: |
+          if [ -d "datasets" ]; then
+            databricks fs mkdirs dbfs:/FileStore/proyecto1-databricks/datasets
+            databricks fs cp --recursive datasets dbfs:/FileStore/proyecto1-databricks/datasets --overwrite
+          fi
