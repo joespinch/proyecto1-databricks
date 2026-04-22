@@ -4,7 +4,7 @@ bundle:
 variables:
   workspace_path:
     description: Databricks workspace destination path
-    default: /Shared/proyecto1-databricks
+    default: /Workspace/Shared/proyecto1-databricks
 
 sync:
   include:

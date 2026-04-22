@@ -6,7 +6,7 @@ on:
       workspace_path:
         description: "Databricks workspace destination path"
         required: false
-        default: "/Shared/proyecto1-databricks"
+        default: "/Workspace/Shared/proyecto1-databricks"
   push:
     branches:
       - main
@@ -52,7 +52,7 @@ jobs:
           if [ -n "${{ github.event.inputs.workspace_path }}" ]; then
             echo "target=${{ github.event.inputs.workspace_path }}" >> "$GITHUB_OUTPUT"
           else
-            echo "target=/Shared/proyecto1-databricks" >> "$GITHUB_OUTPUT"
+            echo "target=/Workspace/Shared/proyecto1-databricks" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Validate Databricks bundle
