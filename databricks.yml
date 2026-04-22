@@ -30,7 +30,7 @@ resources:
       tasks:
         - task_key: prep_ambiente
           notebook_task:
-            notebook_path: ${workspace.root_path}/proceso/1.- Preparacion_Ambiente.ipynb
+            notebook_path: ./proceso/1.- Preparacion_Ambiente.ipynb
           new_cluster:
             spark_version: 14.3.x-scala2.12
             node_type_id: Standard_DS3_v2
@@ -40,7 +40,7 @@ resources:
           depends_on:
             - task_key: prep_ambiente
           notebook_task:
-            notebook_path: ${workspace.root_path}/proceso/2.- Ingest circuits data.ipynb
+            notebook_path: ./proceso/2.- Ingest circuits data.ipynb
           new_cluster:
             spark_version: 14.3.x-scala2.12
             node_type_id: Standard_DS3_v2
@@ -50,7 +50,7 @@ resources:
           depends_on:
             - task_key: prep_ambiente
           notebook_task:
-            notebook_path: ${workspace.root_path}/proceso/2.- Ingest Constructors.ipynb
+            notebook_path: ./proceso/2.- Ingest Constructors.ipynb
           new_cluster:
             spark_version: 14.3.x-scala2.12
             node_type_id: Standard_DS3_v2
@@ -60,7 +60,7 @@ resources:
           depends_on:
             - task_key: prep_ambiente
           notebook_task:
-            notebook_path: ${workspace.root_path}/proceso/2.- Ingest racing data.ipynb
+            notebook_path: ./proceso/2.- Ingest racing data.ipynb
           new_cluster:
             spark_version: 14.3.x-scala2.12
             node_type_id: Standard_DS3_v2
@@ -72,7 +72,7 @@ resources:
             - task_key: ingest_constructors
             - task_key: ingest_races
           notebook_task:
-            notebook_path: ${workspace.root_path}/proceso/3.- Transform.ipynb
+            notebook_path: ./proceso/3.- Transform.ipynb
           new_cluster:
             spark_version: 14.3.x-scala2.12
             node_type_id: Standard_DS3_v2
@@ -82,7 +82,7 @@ resources:
           depends_on:
             - task_key: transform
           notebook_task:
-            notebook_path: ${workspace.root_path}/proceso/4.- Load.ipynb
+            notebook_path: ./proceso/4.- Load.ipynb
           new_cluster:
             spark_version: 14.3.x-scala2.12
             node_type_id: Standard_DS3_v2
@@ -92,7 +92,7 @@ resources:
           depends_on:
             - task_key: load
           notebook_task:
-            notebook_path: ${workspace.root_path}/seguridad/4. Grants-Medallion.ipynb
+            notebook_path: ./seguridad/4. Grants-Medallion.ipynb
           new_cluster:
             spark_version: 14.3.x-scala2.12
             node_type_id: Standard_DS3_v2
