@@ -5,6 +5,9 @@ variables:
   workspace_path:
     description: Databricks workspace destination path
     default: /Workspace/Shared/proyecto1-databricks
+  existing_cluster_id:
+    description: Existing Databricks cluster id for the medallion pipeline
+    default: 0422-045407-iicc8d1c
   node_type_id:
     description: Databricks node type for job clusters
     default: Standard_D4ds_v4
@@ -33,42 +36,32 @@ resources:
     medallion_pipeline:
       name: proyecto1-medallion-pipeline
       max_concurrent_runs: 1
-      job_clusters:
-        - job_cluster_key: shared_medallion_cluster
-          new_cluster:
-            spark_version: ${var.spark_version}
-            node_type_id: ${var.node_type_id}
-            num_workers: 0
-            spark_conf:
-              spark.databricks.cluster.profile: singleNode
-            custom_tags:
-              ResourceClass: SingleNode
       tasks:
         - task_key: prep_ambiente
           notebook_task:
             notebook_path: ./proceso/1.- Preparacion_Ambiente.ipynb
-          job_cluster_key: shared_medallion_cluster
+          existing_cluster_id: ${var.existing_cluster_id}
 
         - task_key: ingest_circuits
           depends_on:
             - task_key: prep_ambiente
           notebook_task:
             notebook_path: ./proceso/2.- Ingest circuits data.ipynb
-          job_cluster_key: shared_medallion_cluster
+          existing_cluster_id: ${var.existing_cluster_id}
 
         - task_key: ingest_constructors
           depends_on:
             - task_key: prep_ambiente
           notebook_task:
             notebook_path: ./proceso/2.- Ingest Constructors.ipynb
-          job_cluster_key: shared_medallion_cluster
+          existing_cluster_id: ${var.existing_cluster_id}
 
         - task_key: ingest_races
           depends_on:
             - task_key: prep_ambiente
           notebook_task:
             notebook_path: ./proceso/2.- Ingest racing data.ipynb
-          job_cluster_key: shared_medallion_cluster
+          existing_cluster_id: ${var.existing_cluster_id}
 
         - task_key: transform
           depends_on:
@@ -77,18 +70,18 @@ resources:
             - task_key: ingest_races
           notebook_task:
             notebook_path: ./proceso/3.- Transform.ipynb
-          job_cluster_key: shared_medallion_cluster
+          existing_cluster_id: ${var.existing_cluster_id}
 
         - task_key: load
           depends_on:
             - task_key: transform
           notebook_task:
             notebook_path: ./proceso/4.- Load.ipynb
-          job_cluster_key: shared_medallion_cluster
+          existing_cluster_id: ${var.existing_cluster_id}
 
         - task_key: grants_medallion
           depends_on:
             - task_key: load
           notebook_task:
             notebook_path: ./seguridad/4. Grants-Medallion.ipynb
-          job_cluster_key: shared_medallion_cluster
+          existing_cluster_id: ${var.existing_cluster_id}
