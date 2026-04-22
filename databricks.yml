@@ -21,4 +21,4 @@ sync:
 targets:
   dev:
     default: true
-    mode: development
+    mode: production
