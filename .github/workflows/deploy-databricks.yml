@@ -7,6 +7,10 @@ on:
         description: "Databricks workspace destination path"
         required: false
         default: "/Workspace/Shared/proyecto1-databricks"
+      node_type_id:
+        description: "Databricks node type for job cluster"
+        required: false
+        default: "Standard_D8ds_v5"
   push:
     branches:
       - main
@@ -55,17 +59,23 @@ jobs:
             echo "target=/Workspace/Shared/proyecto1-databricks" >> "$GITHUB_OUTPUT"
           fi
 
+          if [ -n "${{ github.event.inputs.node_type_id }}" ]; then
+            echo "node_type=${{ github.event.inputs.node_type_id }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "node_type=Standard_D8ds_v5" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Validate Databricks bundle
         shell: bash
         run: |
-          databricks bundle validate -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}"
+          databricks bundle validate -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}" --var "node_type_id=${{ steps.cfg.outputs.node_type }}"
 
       - name: Deploy Databricks bundle
         shell: bash
         run: |
-          databricks bundle deploy -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}"
+          databricks bundle deploy -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}" --var "node_type_id=${{ steps.cfg.outputs.node_type }}"
 
       - name: Run medallion pipeline job
         shell: bash
         run: |
-          databricks bundle run -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}" medallion_pipeline
+          databricks bundle run -t dev --var "workspace_path=${{ steps.cfg.outputs.target }}" --var "node_type_id=${{ steps.cfg.outputs.node_type }}" medallion_pipeline
